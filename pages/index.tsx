@@ -1,7 +1,11 @@
 import Head from 'next/head'
 import Image from "next/image"
+import Link from "next/link"
+import { useRouter } from "next/router"
 
 export default function Home() {
+  const t = useT()
+
   return (
     <>
       <Head>
@@ -19,7 +23,33 @@ export default function Home() {
           priority
         />
 
+        <p>{t('someText')}</p>
+        <ul>
+          <li><Link href="/" locale="en">English (default)</Link></li>
+          <li><Link href="/" locale="sv">Swedish</Link></li>
+          <li><Link href="/robots.txt" locale="en">robots.txt</Link></li>
+        </ul>
       </main>
     </>
   )
+}
+
+const strings: Record<string, Record<string, string>> = {
+  en: {
+    someText: "This is some English text"
+  },
+  sv: {
+    someText: "Det här är lite text"
+  }
+}
+
+function useT() {
+  const {locale} = useRouter()
+
+  return function(key: string): string {
+    if (!locale) {
+      return `Undefined locale <${key}>`
+    }
+    return strings[locale][key] || `No <$key> for locale ${locale}`
+  }
 }
